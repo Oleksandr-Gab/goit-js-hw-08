@@ -80,11 +80,29 @@ const elements = images
                     .join('');
 gallary.innerHTML = elements;
 
-const galleryItem = document.querySelectorAll('.gallery-item');
-const galleryLink = document.querySelectorAll('.gallery-link');
-const galleryImage = document.querySelectorAll('.gallery-image');
+const instance = basicLightbox.create(`
+    <div class="modal">
+    </div>
+`)
 
+const close  = (event) => {
+  if (event.code === 'Escape') {
+    instance.close()
+    document.removeEventListener('keydown', close);
+  } 
+}
 
-galleryLink.addLaddEventListener('onclick', event => {
-    event.preventDefault()
-})
+const selectImge = (event) => {
+  if (event.target.nodeName !== "IMG") {
+    return;
+  }
+  const selectImg = event.target;
+  const modalImg = `<img src= "${selectImg.dataset.source}" alt="${selectImg.alt}"/>`
+  instance.show();
+  const modal = document.querySelector('.modal');
+  modal.innerHTML = modalImg;
+
+  document.addEventListener('keydown', close)
+}
+
+gallary.addEventListener('click', selectImge)
