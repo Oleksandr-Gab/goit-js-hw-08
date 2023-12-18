@@ -64,11 +64,11 @@ const images = [
     },
   ];
 
-const gallary = document.querySelector('.gallery');
+const gallery = document.querySelector('.gallery');
 const elements = images
                     .map(im => 
                         `<li class="gallery-item">
-                            <a class="gallery-link" href="${im.original}" onclick="event.preventDefault()">
+                            <a class="gallery-link" href="${im.original}">
                                 <img
                                     class="gallery-image"
                                     src="${im.preview}""
@@ -78,31 +78,41 @@ const elements = images
                             </a>
                         </li>`)
                     .join('');
-gallary.innerHTML = elements;
+gallery.innerHTML = elements;
+
+const galleryLink = document.querySelector('.gallery-link');
+
+const stopDefAction = (event) => {
+  event.preventDefault();
+}
+
+galleryLink.addEventListener('click', stopDefAction);
+
 
 const instance = basicLightbox.create(`
     <div class="modal">
     </div>
-`)
+`,
+  {
+  onShow: () => {document.addEventListener('keydown', close)},
+  onClose: () => {document.removeEventListener('keydown', close)}
+  }
+)
 
 const close  = (event) => {
   if (event.code === 'Escape') {
     instance.close()
-    document.removeEventListener('keydown', close);
   } 
 }
 
 const selectImge = (event) => {
-  if (event.target.nodeName !== "IMG") {
-    return;
-  }
+  if (event.target.nodeName !== "IMG") return;
+  event.preventDefault()
   const selectImg = event.target;
   const modalImg = `<img src= "${selectImg.dataset.source}" alt="${selectImg.alt}"/>`
   instance.show();
   const modal = document.querySelector('.modal');
   modal.innerHTML = modalImg;
-
-  document.addEventListener('keydown', close)
 }
 
-gallary.addEventListener('click', selectImge)
+gallery.addEventListener('click', selectImge)
